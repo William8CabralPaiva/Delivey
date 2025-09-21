@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,13 +27,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.cabral.delivery.R
 import com.cabral.delivery.model.Product
-import com.cabral.delivery.ui.theme.Purple500
-import com.cabral.delivery.ui.theme.Teal200
+import com.cabral.delivery.ui.theme.DeliveryTheme
 import com.cabral.delivery.utils.extesions.toBrCurrency
+import java.math.BigDecimal
+
 
 @Composable
 fun ProductItem(product: Product) {
@@ -52,22 +56,26 @@ fun ProductItem(product: Product) {
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                Purple500, Teal200
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.secondary
                             )
                         )
                     )
                     .fillMaxWidth()
             ) {
-                Image(
-                    painter = painterResource(id = product.image),
+
+                AsyncImage(
+                    model = product.image,//NOTE URL que muda "https://picsum.photos/200"
                     contentDescription = null,
                     Modifier
                         .size(imageSize)
                         .offset(y = imageSize / 2)
                         .clip(shape = CircleShape)
                         .align(BottomCenter),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.placeholder),
                 )
+
             }
             Spacer(modifier = Modifier.height(imageSize / 2))
             Column(Modifier.padding(16.dp)) {
@@ -92,6 +100,15 @@ fun ProductItem(product: Product) {
 @Preview(showBackground = true)
 @Composable
 private fun ProductItemPreview() {
-    val espetinho = Product("Espetinho", 5.toBigDecimal(), R.drawable.espetinho)
-    ProductItem(espetinho)
+    DeliveryTheme {
+        Surface {
+            ProductItem(
+                Product(
+                    name = LoremIpsum(50).values.first(),
+                    price = BigDecimal("14.99")
+                )
+            )
+        }
+    }
+
 }

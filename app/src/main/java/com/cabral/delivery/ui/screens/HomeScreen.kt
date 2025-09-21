@@ -6,17 +6,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.cabral.delivery.R
-import com.cabral.delivery.exampledata.listOfProducts
+import com.cabral.delivery.exampledata.sampleSections
 import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.components.ProductsSection
+import com.cabral.delivery.ui.theme.DeliveryTheme
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    sections: Map<String, List<Product>>,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -24,9 +27,11 @@ fun HomeScreen() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Spacer(Modifier)
-        ProductsSection("Promoções", listOfProducts)
-        ProductsSection("Saldagos", listOfProducts)
-        ProductsSection("Doces", listOfProducts)
+        for (section in sections) {
+            val title = section.key
+            val products = section.value
+            ProductsSection(title, products)
+        }
         Spacer(Modifier)
     }
 }
@@ -35,5 +40,9 @@ fun HomeScreen() {
 @Preview(showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen()
+    DeliveryTheme {
+        Surface {
+            HomeScreen(sampleSections)
+        }
+    }
 }
