@@ -49,13 +49,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun App(){
+private fun App() {
     DeliveryTheme {
+
+        // Surface é um container visual que aplica forma, cor de fundo e elevação.
+        // Quando usado sem passar a propriedade `color`, como aqui,
+        // ele automaticamente usa `MaterialTheme.colorScheme.background`,
+        // que foi definido dentro do DeliveryTheme.
+
+        // Isso garante que a tela tenha a cor de fundo correta (claro ou escuro),
+        // evitando que o fundo fique transparente ou com aparência incorreta.
         Surface {
             HomeScreen()
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
