@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
+import coil.compose.AsyncImage
 import com.cabral.delivery.R
 import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.theme.DeliveryTheme
@@ -67,7 +67,7 @@ fun ProductItem(product: Product) {
                 AsyncImage(
                     model = product.image,//NOTE URL que muda "https://picsum.photos/200"
                     contentDescription = null,
-                    Modifier
+                    modifier = Modifier
                         .size(imageSize)
                         .offset(y = imageSize / 2)
                         .clip(shape = CircleShape)
@@ -105,7 +105,8 @@ private fun ProductItemPreview() {
             ProductItem(
                 Product(
                     name = LoremIpsum(50).values.first(),
-                    price = BigDecimal("14.99")
+                    price = BigDecimal("14.99"),
+                    ""
                 )
             )
         }
