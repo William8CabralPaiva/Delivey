@@ -1,11 +1,9 @@
 package com.cabral.delivery.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,19 +18,21 @@ import com.cabral.delivery.ui.theme.DeliveryTheme
 fun HomeScreen(
     sections: Map<String, List<Product>>,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        //contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
     ) {
-        Spacer(Modifier)
+        item { Spacer(Modifier) }// // Este item está recebendo um espaço do verticalArrangement
         for (section in sections) {
             val title = section.key
             val products = section.value
-            ProductsSection(title, products)
+            item {
+                ProductsSection(title, products)
+            }
         }
-        Spacer(Modifier)
+        //modifier pega os a
+        item { Spacer(Modifier) }
     }
 }
 
