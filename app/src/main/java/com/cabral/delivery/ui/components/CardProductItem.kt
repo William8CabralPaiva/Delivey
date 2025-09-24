@@ -67,16 +67,6 @@ fun CardProductItem(
     }
 }
 
-@Composable
-private  fun A(){
-    DeliveryTheme {
-        Surface {
-
-
-        }
-        }
-}
-
 @Preview
 @Composable
 private fun CardProductItemPreview() {
