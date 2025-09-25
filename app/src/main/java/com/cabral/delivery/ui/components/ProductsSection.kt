@@ -20,8 +20,12 @@ import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.theme.DeliveryTheme
 
 @Composable
-fun ProductsSection(title: String, products: List<Product>) {
-    Column {
+fun ProductsSection(
+    title: String,
+    products: List<Product>,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
         Text(
             text = title,
             Modifier.padding(

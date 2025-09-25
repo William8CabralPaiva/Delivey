@@ -19,11 +19,11 @@ import com.cabral.delivery.ui.theme.DeliveryTheme
 @Composable
 fun SearchTextField(
     value: String,
+    modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = "",
     onValueChange: (String) -> Unit = {},
     focus: FocusRequester = FocusRequester(),
-    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = value,

@@ -1,5 +1,6 @@
 package com.cabral.delivery.exampledata
 
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import com.cabral.delivery.model.Product
 import java.math.BigDecimal
 
@@ -13,6 +14,7 @@ val sampleCandies = listOf(
         name = "Sorvete",
         price = BigDecimal("5.99"),
         image = "https://images.pexels.com/photos/1352278/pexels-photo-1352278.jpeg",
+        description = LoremIpsum(5).values.first()
     ),
     Product(
         name = "Bolo",
@@ -26,6 +28,7 @@ val sampleDrinks = listOf(
         name = "Cerveja",
         price = BigDecimal("5.99"),
         image = "https://images.pexels.com/photos/1552630/pexels-photo-1552630.jpeg",
+        description = LoremIpsum(20).values.first()
     ),
     Product(
         name = "Refrigerante",
@@ -35,7 +38,8 @@ val sampleDrinks = listOf(
     Product(
         name = "Suco",
         price = BigDecimal("7.99"),
-        image = "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg"
+        image = "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg",
+        description = LoremIpsum(100).values.first()
     ),
     Product(
         name = "Água",
@@ -48,7 +52,8 @@ val sampleProducts: List<Product> = listOf(
     Product(
         name = "Hamburguer",
         price = BigDecimal("12.99"),
-        image = "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg"
+        image = "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",
+        description = LoremIpsum(20).values.first()
     ),
     Product(
         name = "Pizza",
@@ -58,7 +63,8 @@ val sampleProducts: List<Product> = listOf(
     Product(
         name = "Batata frita",
         price = BigDecimal("7.99"),
-        image = "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg"
+        image = "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg",
+        description = LoremIpsum(50).values.first()
     ), *sampleDrinks.toTypedArray(), *sampleCandies.toTypedArray()
 )
 
