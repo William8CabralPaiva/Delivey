@@ -31,11 +31,25 @@ import com.cabral.delivery.ui.theme.DeliveryTheme
 @Composable
 fun HomeScreen(
     sections: Map<String, List<Product>>,
+    startSearchText: String = "",
 ) {
 
     var focusSearch by remember { mutableStateOf(FocusRequester()) }
+    var searchText by remember { mutableStateOf(startSearchText) }
+
+    //só executa quando esse codigo mudar
+    val filterProducts = remember(searchText) {
+        if (searchText.isNotBlank()) {
+            sampleProducts.filter {
+                it.name.contains(searchText, ignoreCase = true)
+                        || it.description?.contains(searchText, ignoreCase = true) ?: false
+            }
+        } else {
+            emptyList()
+        }
+    }
+
     Column {
-        var searchText by remember { mutableStateOf("") }
 //        OutlinedTextField(value = searchText, onValueChange = {
 //            searchText = it
 //        })
@@ -46,7 +60,10 @@ fun HomeScreen(
             focus = focusSearch,
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onValueChange = {
+                searchText = it
+            }
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -54,17 +71,21 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
             //  item { Spacer(Modifier) }// // Este item está recebendo um espaço do verticalArrangement
-//            for (section in sections) {
-//                val title = section.key
-//                val products = section.value
-//                item {
-//                    ProductsSection(title, products)
-//                }
-//            }
-          //  item { Spacer(Modifier) }
-            items(sampleProducts){
-                CardProductItem(it,Modifier.padding(horizontal = 16.dp))
+            if (searchText.isBlank()) {
+                for (section in sections) {
+                    val title = section.key
+                    val products = section.value
+                    item {
+                        ProductsSection(title, products)
+                    }
+                }
+            } else {
+                items(filterProducts) {
+                    CardProductItem(it, Modifier.padding(horizontal = 16.dp))
+                }
             }
+            //  item { Spacer(Modifier) }
+
         }
     }
 
@@ -80,6 +101,16 @@ private fun HomeScreenPreview() {
     DeliveryTheme {
         Surface {
             HomeScreen(sampleSections)
+        }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+private fun HomeScreenPreviewExpanded() {
+    DeliveryTheme {
+        Surface {
+            HomeScreen(sampleSections, "espetinho")
         }
     }
 }
