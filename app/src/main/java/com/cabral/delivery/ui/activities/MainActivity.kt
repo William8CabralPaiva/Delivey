@@ -18,56 +18,75 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import com.cabral.delivery.ProductDao
+import com.cabral.delivery.exampledata.sampleCandies
+import com.cabral.delivery.exampledata.sampleDrinks
 import com.cabral.delivery.exampledata.sampleSections
+import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.screens.HomeScreen
 import com.cabral.delivery.ui.theme.DeliveryTheme
 
-
 class MainActivity : ComponentActivity() {
+
+    private val dao = ProductDao()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, true)
+
         setContent {
             val intent = Intent(this, ProductFormActivity::class.java)
-            App(onFabClick = { startActivity(intent) })
+            App(onFabClick = { startActivity(intent) }, content = {
+                HomeScreen(sections = getSections())
+            })
         }
     }
-}
 
-@Composable
-private fun App(onFabClick: () -> Unit = {}) {
-    DeliveryTheme {
+    private fun getSections(): Map<String, List<Product>> {
+        return mapOf(
+            "Todos produtos" to dao.products(),
+            "Promoções" to sampleDrinks + sampleCandies,
+            "Doces" to sampleCandies,
+            "Bebidas" to sampleDrinks
+        )
+    }
 
-        // Surface é um container visual que aplica forma, cor de fundo e elevação.
-        // Quando usado sem passar a propriedade `color`, como aqui,
-        // ele automaticamente usa `MaterialTheme.colorScheme.background`,
-        // que foi definido dentro do DeliveryTheme.
+    @Composable
+    private fun App(
+        onFabClick: () -> Unit = {},
+        content: @Composable () -> Unit = { },
+    ) {
+        DeliveryTheme {
 
-        // Isso garante que a tela tenha a cor de fundo correta (claro ou escuro),
-        // evitando que o fundo fique transparente ou com aparência incorreta.
-        Surface {
-            Scaffold(floatingActionButton = {
-                FloatingActionButton(
-                    shape = CircleShape,
-                    onClick = onFabClick
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                }
-            }) { paddingValues ->
-                Box(modifier = Modifier.padding(paddingValues)) {
-                    HomeScreen(
-                        sampleSections
-                    )
+            // Surface é um container visual que aplica forma, cor de fundo e elevação.
+            // Quando usado sem passar a propriedade `color`, como aqui,
+            // ele automaticamente usa `MaterialTheme.colorScheme.background`,
+            // que foi definido dentro do DeliveryTheme.
+
+            // Isso garante que a tela tenha a cor de fundo correta (claro ou escuro),
+            // evitando que o fundo fique transparente ou com aparência incorreta.
+            Surface {
+                Scaffold(floatingActionButton = {
+                    FloatingActionButton(
+                        shape = CircleShape,
+                        onClick = onFabClick
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    }
+                }) { paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues)) {
+                        content()
+                    }
                 }
             }
         }
     }
-}
 
 
-@Preview
-@Composable
-fun AppPreview() {
-    App()
+    @Preview
+    @Composable
+    fun AppPreview() {
+        HomeScreen(sections = sampleSections)
+    }
 }

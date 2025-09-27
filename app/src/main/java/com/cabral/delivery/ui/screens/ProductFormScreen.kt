@@ -113,7 +113,7 @@ fun ProductFormScreen(
 
         Button(
             onClick = {
-                Log.i("ProductFormActivity", "ProductFormScreen: $product")
+                Log.i("Sucesso preduto", "ProductFormScreen: $product")
                 onSaveClick(product)
             },
             Modifier.fillMaxWidth(),
