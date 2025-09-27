@@ -53,6 +53,8 @@ fun ProductFormScreen(
     Column(
         Modifier
             .fillMaxSize()
+            //foi colocado o margin apenas no horizontal pq quando scrolla tem espaçamento no top e no bottom
+            // entao colocamos o spacer no top e bottom
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
