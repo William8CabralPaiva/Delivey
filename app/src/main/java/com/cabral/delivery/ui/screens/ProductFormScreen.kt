@@ -14,15 +14,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +26,7 @@ import coil.compose.AsyncImage
 import com.cabral.delivery.R
 import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.components.DeliveryTextField
+import com.cabral.delivery.ui.components.FieldType
 import com.cabral.delivery.ui.savers.ProductSaver
 import com.cabral.delivery.ui.theme.DeliveryTheme
 import java.math.BigDecimal
@@ -38,7 +35,6 @@ import java.math.BigDecimal
 fun ProductFormScreen(
     onSaveClick: (Product) -> Unit = {},
 ) {
-
     var product by rememberSaveable(stateSaver = ProductSaver) {
         mutableStateOf(
             Product(
@@ -53,7 +49,7 @@ fun ProductFormScreen(
     Column(
         Modifier
             .fillMaxSize()
-            //foi colocado o margin apenas no horizontal pq quando scrolla tem espaçamento no top e no bottom
+            // foi colocado o margin apenas no horizontal pq quando scrolla tem espaçamento no top e no bottom
             // entao colocamos o spacer no top e bottom
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
@@ -84,7 +80,7 @@ fun ProductFormScreen(
             onValueChange = { product = product.copy(image = it) },
             label = "Url da imagem",
             modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Uri
+            type = FieldType.URL
         )
 
         DeliveryTextField(
@@ -92,8 +88,7 @@ fun ProductFormScreen(
             onValueChange = { product = product.copy(name = it) },
             label = "Nome",
             modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Text,
-            capitalization = KeyboardCapitalization.Words
+            type = FieldType.NAME
         )
 
         DeliveryTextField(
@@ -105,7 +100,7 @@ fun ProductFormScreen(
             },
             label = "Preço",
             modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Decimal
+            type = FieldType.MONEY
         )
 
         DeliveryTextField(
@@ -113,9 +108,7 @@ fun ProductFormScreen(
             onValueChange = { product = product.copy(description = it) },
             label = "Descrição",
             modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Text,
-            capitalization = KeyboardCapitalization.Sentences,
-            minHeight = 100.dp
+            type = FieldType.TEXT_AREA
         )
 
         Button(
@@ -130,7 +123,6 @@ fun ProductFormScreen(
         Spacer(modifier = Modifier)
     }
 }
-
 
 @Preview
 @Composable

@@ -18,14 +18,37 @@ fun DeliveryTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Next,
-    capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
-    minHeight: Dp = 0.dp
+    type: FieldType = FieldType.NAME
 ) {
-    val finalModifier = if (minHeight > 0.dp) {
-        modifier
-            .heightIn(min = minHeight)
+    val config = when (type) {
+        FieldType.URL -> FieldConfig(
+            keyboardType = KeyboardType.Uri,
+            imeAction = ImeAction.Next,
+            capitalization = KeyboardCapitalization.None,
+            minHeight = 0.dp
+        )
+        FieldType.NAME -> FieldConfig(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next,
+            capitalization = KeyboardCapitalization.Words,
+            minHeight = 0.dp
+        )
+        FieldType.MONEY -> FieldConfig(
+            keyboardType = KeyboardType.Decimal,
+            imeAction = ImeAction.Next,
+            capitalization = KeyboardCapitalization.None,
+            minHeight = 0.dp
+        )
+        FieldType.TEXT_AREA -> FieldConfig(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Default,
+            capitalization = KeyboardCapitalization.Sentences,
+            minHeight = 100.dp
+        )
+    }
+
+    val finalModifier = if (config.minHeight > 0.dp) {
+        modifier.heightIn(min = config.minHeight)
     } else {
         modifier
     }
@@ -36,9 +59,23 @@ fun DeliveryTextField(
         modifier = finalModifier,
         label = { Text(label) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            imeAction = imeAction,
-            capitalization = capitalization
+            keyboardType = config.keyboardType,
+            imeAction = config.imeAction,
+            capitalization = config.capitalization
         )
     )
 }
+
+enum class FieldType {
+    URL,
+    NAME,
+    MONEY,
+    TEXT_AREA
+}
+
+private data class FieldConfig(
+    val keyboardType: KeyboardType,
+    val imeAction: ImeAction,
+    val capitalization: KeyboardCapitalization,
+    val minHeight: Dp
+)
