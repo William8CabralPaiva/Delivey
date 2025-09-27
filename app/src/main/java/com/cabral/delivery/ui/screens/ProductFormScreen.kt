@@ -11,17 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -33,19 +30,25 @@ import coil.compose.AsyncImage
 import com.cabral.delivery.R
 import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.components.DeliveryTextField
+import com.cabral.delivery.ui.savers.ProductSaver
 import com.cabral.delivery.ui.theme.DeliveryTheme
 import java.math.BigDecimal
-import java.text.DecimalFormat
 
 @Composable
 fun ProductFormScreen(
     onSaveClick: (Product) -> Unit = {},
 ) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    val formatter = DecimalFormat("#.##")
+
+    var product by rememberSaveable(stateSaver = ProductSaver) {
+        mutableStateOf(
+            Product(
+                name = "",
+                price = BigDecimal.ZERO,
+                image = "",
+                description = ""
+            )
+        )
+    }
 
     Column(
         Modifier
@@ -61,9 +64,10 @@ fun ProductFormScreen(
             fontSize = 28.sp,
         )
 
-        if (url.isNotBlank()) {
+        if (!product.image.isNullOrBlank()) {
             AsyncImage(
-                model = url, contentDescription = null,
+                model = product.image,
+                contentDescription = null,
                 Modifier
                     .fillMaxWidth()
                     .height(200.dp),
@@ -73,18 +77,17 @@ fun ProductFormScreen(
             )
         }
 
-        // Usando o componente reutilizável
         DeliveryTextField(
-            value = url,
-            onValueChange = { url = it },
+            value = product.image ?: "",
+            onValueChange = { product = product.copy(image = it) },
             label = "Url da imagem",
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Uri
         )
 
         DeliveryTextField(
-            value = name,
-            onValueChange = { name = it },
+            value = product.name,
+            onValueChange = { product = product.copy(name = it) },
             label = "Nome",
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Text,
@@ -92,13 +95,11 @@ fun ProductFormScreen(
         )
 
         DeliveryTextField(
-            value = price,
+            value = if (product.price == BigDecimal.ZERO) "" else product.price.toPlainString(),
             onValueChange = {
-                try {
-                    price = formatter.format(BigDecimal(it))
-                } catch (e: IllegalArgumentException) {
-                    if (it.isBlank()) price = it
-                }
+                product = product.copy(
+                    price = it.toBigDecimalOrNull() ?: BigDecimal.ZERO
+                )
             },
             label = "Preço",
             modifier = Modifier.fillMaxWidth(),
@@ -106,8 +107,8 @@ fun ProductFormScreen(
         )
 
         DeliveryTextField(
-            value = description,
-            onValueChange = { description = it },
+            value = product.description ?: "",
+            onValueChange = { product = product.copy(description = it) },
             label = "Descrição",
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Text,
@@ -117,22 +118,10 @@ fun ProductFormScreen(
 
         Button(
             onClick = {
-                val convertedPrice = try {
-                    BigDecimal(price)
-                } catch (e: NumberFormatException) {
-                    BigDecimal.ZERO
-                }
-                val product = Product(
-                    name = name,
-                    image = url,
-                    price = convertedPrice,
-                    description = description
-                )
                 Log.i("ProductFormActivity", "ProductFormScreen: $product")
                 onSaveClick(product)
             },
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth(),
         ) {
             Text(text = "Salvar", color = Color.White, fontSize = 18.sp)
         }
