@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
@@ -24,6 +25,7 @@ import com.cabral.delivery.exampledata.sampleDrinks
 import com.cabral.delivery.exampledata.sampleSections
 import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.screens.HomeScreen
+import com.cabral.delivery.ui.screens.HomeScreenUiState
 import com.cabral.delivery.ui.theme.DeliveryTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +40,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             val intent = Intent(this, ProductFormActivity::class.java)
             App(onFabClick = { startActivity(intent) }, content = {
-                HomeScreen(sections = getSections())
+
+                val sections = getSections()
+                val products = dao.products()
+                val state = remember(products) {
+                    HomeScreenUiState(sections = sections, products = products)
+                }
+
+                HomeScreen(state)
             })
         }
     }
@@ -87,6 +96,6 @@ class MainActivity : ComponentActivity() {
     @Preview
     @Composable
     fun AppPreview() {
-        HomeScreen(sections = sampleSections)
+        HomeScreen(HomeScreenUiState(sections = sampleSections))
     }
 }
