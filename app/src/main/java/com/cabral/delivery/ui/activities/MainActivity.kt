@@ -41,13 +41,9 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, ProductFormActivity::class.java)
             App(onFabClick = { startActivity(intent) }, content = {
 
-                val sections = getSections()
                 val products = dao.products()
-                val state = remember(products) {
-                    HomeScreenUiState(sections = sections, products = products)
-                }
+                HomeScreen(products = products)
 
-                HomeScreen(state)
             })
         }
     }
