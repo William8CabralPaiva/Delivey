@@ -1,6 +1,5 @@
 package com.cabral.delivery.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +12,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -24,29 +24,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.cabral.delivery.R
-import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.components.DeliveryTextField
 import com.cabral.delivery.ui.components.FieldType
-import com.cabral.delivery.ui.savers.ProductSaver
 import com.cabral.delivery.ui.screens.states.ProductFormUiState
 import com.cabral.delivery.ui.theme.DeliveryTheme
-import java.math.BigDecimal
 
 
 @Composable
 fun ProductFormScreen(
     viewModel: ProductFormViewModel,
-    onSaveClick: (Product) -> Unit = {},
+    onSaveClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
     ProductFormScreen(
-        state = state
+        state = state,
+        onSaveClick = {
+            viewModel.save()
+            onSaveClick()
+        }
     )
 }
 
 @Composable
 fun ProductFormScreen(
     state: ProductFormUiState = ProductFormUiState(),
+    onSaveClick: () -> Unit = {}
 ) {
 
     val image = state.product.url
@@ -115,10 +117,7 @@ fun ProductFormScreen(
         )
 
         Button(
-            onClick = {
-//                Log.i("Sucesso preduto", "ProductFormScreen: $product")
-//                onSaveClick(product)
-            },
+            onClick = onSaveClick,
             Modifier.fillMaxWidth(),
         ) {
             Text(text = "Salvar", color = Color.White, fontSize = 18.sp)

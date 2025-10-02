@@ -1,7 +1,9 @@
 package com.cabral.delivery.ui.screens
 
 import androidx.lifecycle.ViewModel
+import com.cabral.delivery.ProductDao
 import com.cabral.delivery.ui.screens.states.ProductFormUiState
+import com.cabral.delivery.ui.screens.states.toProduct
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -10,6 +12,8 @@ import java.text.DecimalFormat
 
 class ProductFormViewModel : ViewModel() {
 
+    val productDao = ProductDao()
+
     private val _uiState: MutableStateFlow<ProductFormUiState> = MutableStateFlow(
         ProductFormUiState()
     )
@@ -17,7 +21,6 @@ class ProductFormViewModel : ViewModel() {
     val uiState get() = _uiState.asStateFlow()
 
     private val formatter = DecimalFormat("#.##")
-
 
     init {
         _uiState.update { currentState ->
@@ -46,8 +49,12 @@ class ProductFormViewModel : ViewModel() {
                         _uiState.value.copy(product = _uiState.value.product.copy(description = it))
                 }
             )
+        }
+    }
 
-
+    fun save() {
+        _uiState.value.run {
+            productDao.save(product.toProduct())
         }
     }
 }
