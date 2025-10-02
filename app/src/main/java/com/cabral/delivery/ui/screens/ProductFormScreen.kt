@@ -28,24 +28,31 @@ import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.components.DeliveryTextField
 import com.cabral.delivery.ui.components.FieldType
 import com.cabral.delivery.ui.savers.ProductSaver
+import com.cabral.delivery.ui.screens.states.ProductFormUiState
 import com.cabral.delivery.ui.theme.DeliveryTheme
 import java.math.BigDecimal
 
+
 @Composable
 fun ProductFormScreen(
+    viewModel: ProductFormViewModel,
     onSaveClick: (Product) -> Unit = {},
 ) {
-    var product by rememberSaveable(stateSaver = ProductSaver) {
-        mutableStateOf(
-            Product(
-                name = "",
-                price = BigDecimal.ZERO,
-                image = "",
-                description = ""
-            )
-        )
-    }
+    val state by viewModel.uiState.collectAsState()
+    ProductFormScreen(
+        state = state
+    )
+}
 
+@Composable
+fun ProductFormScreen(
+    state: ProductFormUiState = ProductFormUiState(),
+) {
+
+    val image = state.product.url
+    val name = state.product.name
+    val price = state.product.price
+    val description = state.product.description
     Column(
         Modifier
             .fillMaxSize()
@@ -62,9 +69,9 @@ fun ProductFormScreen(
             fontSize = 28.sp,
         )
 
-        if (!product.image.isNullOrBlank()) {
+        if (state.product.isShowPreview) {
             AsyncImage(
-                model = product.image,
+                model = image,
                 contentDescription = null,
                 Modifier
                     .fillMaxWidth()
@@ -76,36 +83,32 @@ fun ProductFormScreen(
         }
 
         DeliveryTextField(
-            value = product.image ?: "",
-            onValueChange = { product = product.copy(image = it) },
+            value = image,
+            onValueChange = state.onUrlChange,
             label = "Url da imagem",
             modifier = Modifier.fillMaxWidth(),
             type = FieldType.URL
         )
 
         DeliveryTextField(
-            value = product.name,
-            onValueChange = { product = product.copy(name = it) },
+            value = name,
+            onValueChange = state.onNameChange,
             label = "Nome",
             modifier = Modifier.fillMaxWidth(),
             type = FieldType.NAME
         )
 
         DeliveryTextField(
-            value = if (product.price == BigDecimal.ZERO) "" else product.price.toPlainString(),
-            onValueChange = {
-                product = product.copy(
-                    price = it.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                )
-            },
+            value = price,
+            onValueChange = state.onPriceChange,
             label = "Preço",
             modifier = Modifier.fillMaxWidth(),
             type = FieldType.MONEY
         )
 
         DeliveryTextField(
-            value = product.description ?: "",
-            onValueChange = { product = product.copy(description = it) },
+            value = description,
+            onValueChange = state.onDescriptionChange,
             label = "Descrição",
             modifier = Modifier.fillMaxWidth(),
             type = FieldType.TEXT_AREA
@@ -113,8 +116,8 @@ fun ProductFormScreen(
 
         Button(
             onClick = {
-                Log.i("Sucesso preduto", "ProductFormScreen: $product")
-                onSaveClick(product)
+//                Log.i("Sucesso preduto", "ProductFormScreen: $product")
+//                onSaveClick(product)
             },
             Modifier.fillMaxWidth(),
         ) {
@@ -123,6 +126,7 @@ fun ProductFormScreen(
         Spacer(modifier = Modifier)
     }
 }
+
 
 @Preview
 @Composable
