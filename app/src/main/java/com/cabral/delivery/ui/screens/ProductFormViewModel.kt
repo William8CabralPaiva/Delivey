@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class ProductFormViewModel : ViewModel() {
 
@@ -36,11 +38,13 @@ class ProductFormViewModel : ViewModel() {
                     )
                 },
                 onPriceChange = {
-                    val price = formatter.format(BigDecimal(it))
+                    val df = DecimalFormat("#,##0.##", DecimalFormatSymbols(Locale("pt", "BR")))
 
-                    price?.let {
-                        _uiState.value =
-                            _uiState.value.copy(product = _uiState.value.product.copy(price = it))
+                    val number = it.replace(",", ".").toBigDecimalOrNull()
+                    number?.let { value ->
+                        _uiState.value = _uiState.value.copy(
+                            product = _uiState.value.product.copy(price = df.format(value))
+                        )
                     }
 
                 },
