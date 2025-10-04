@@ -11,40 +11,36 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.cabral.delivery.exampledata.sampleCandies
-import com.cabral.delivery.exampledata.sampleDrinks
 import com.cabral.delivery.exampledata.sampleProducts
 import com.cabral.delivery.exampledata.sampleSections
-import com.cabral.delivery.model.Product
 import com.cabral.delivery.ui.components.CardProductItem
 import com.cabral.delivery.ui.components.ProductsSection
 import com.cabral.delivery.ui.components.SearchTextField
+import com.cabral.delivery.ui.screens.states.HomeScreenUiState
 import com.cabral.delivery.ui.theme.DeliveryTheme
 
 @Composable
 fun HomeScreen(
     state: HomeScreenUiState = HomeScreenUiState(),
+    focusRequester: FocusRequester = FocusRequester(),
 ) {
     Column {
         val sections = state.sections
         val text = state.searchText
         val searchedProducts = state.searchedProducts
-        val focus = state.focus
 
         SearchTextField(
             value = text,
             label = "Pesquisar",
             placeholder = "O que vc procura?",
-            focus = focus,
+            focus = focusRequester,
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
@@ -82,54 +78,19 @@ fun HomeScreen(
 
 
 @Composable
-fun HomeScreen(products: List<Product>) {
-    val sections = mapOf(
-        "Todos produtos" to products,
-        "Promoções" to sampleDrinks + sampleCandies,
-        "Doces" to sampleCandies,
-        "Bebidas" to sampleDrinks
-    )
+fun HomeScreen(
+    viewModel: HomeScreenViewModel,
+) {
 
-    var text by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var focus by remember { mutableStateOf(FocusRequester()) }
-
-    fun containsInNameOrDescription() = { product: Product ->
-        product.name.contains(
-            text,
-            ignoreCase = true,
-        ) || product.description?.contains(
-            text,
-            ignoreCase = true,
-        ) ?: false
-    }
-
-    val searchedProducts = remember(text, products) {
-        if (text.isNotBlank()) {
-            sampleProducts.filter(containsInNameOrDescription()) +
-                    products.filter(containsInNameOrDescription())
-        } else emptyList()
-    }
-
-    val state = remember(products, text) {
-        HomeScreenUiState(
-            sections = sections,
-            searchedProducts = searchedProducts,
-            searchText = text,
-            onSearchChange = {
-                text = it
-            },
-            focus = focus
-        )
-    }
+    val state by viewModel.uiState.collectAsState()
+    // usar mutable stateof só quando precisar reconstruir algo na tela
+    val focus = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         focus.requestFocus()
     }
 
-    HomeScreen(state = state)
+    HomeScreen(state = state, focusRequester = focus)
 }
 
 

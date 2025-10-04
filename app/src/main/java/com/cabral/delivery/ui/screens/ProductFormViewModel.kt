@@ -1,0 +1,64 @@
+package com.cabral.delivery.ui.screens
+
+import androidx.lifecycle.ViewModel
+import com.cabral.delivery.ProductDao
+import com.cabral.delivery.ui.screens.states.ProductFormUiState
+import com.cabral.delivery.ui.screens.states.toProduct
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
+
+class ProductFormViewModel : ViewModel() {
+
+    val productDao = ProductDao()
+
+    private val _uiState: MutableStateFlow<ProductFormUiState> = MutableStateFlow(
+        ProductFormUiState()
+    )
+
+    val uiState get() = _uiState.asStateFlow()
+
+    private val formatter = DecimalFormat("#.##")
+
+    init {
+        _uiState.update { currentState ->
+
+            currentState.copy(
+                onUrlChange = {
+                    _uiState.value =
+                        _uiState.value.copy(product = _uiState.value.product.copy(url = it))
+                },
+                onNameChange = {
+                    _uiState.value = _uiState.value.copy(
+                        product = _uiState.value.product.copy(name = it)
+                    )
+                },
+                onPriceChange = {
+                    val df = DecimalFormat("#,##0.##", DecimalFormatSymbols(Locale("pt", "BR")))
+
+                    val number = it.replace(",", ".").toBigDecimalOrNull()
+                    number?.let { value ->
+                        _uiState.value = _uiState.value.copy(
+                            product = _uiState.value.product.copy(price = df.format(value))
+                        )
+                    }
+
+                },
+                onDescriptionChange = {
+                    _uiState.value =
+                        _uiState.value.copy(product = _uiState.value.product.copy(description = it))
+                }
+            )
+        }
+    }
+
+    fun save() {
+        _uiState.value.run {
+            productDao.save(product.toProduct())
+        }
+    }
+}
